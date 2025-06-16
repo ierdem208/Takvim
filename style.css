@@ -1,0 +1,51 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  overflow-x: auto;
+}
+
+.gantt-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 1300px; /* Force scroll if needed */
+}
+
+th, td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+  text-align: center;
+}
+
+.task-header {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  width: 150px;
+}
+
+.task-name {
+  background-color: #f1f3f5;
+  text-align: left;
+  font-weight: 500;
+}
+
+.week-cell {
+  background-color: #ffffff;
+}
+
+
+
+#ganttWrapper {
+  position: relative;
+}
+
+#todayLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: black;
+  z-index: 10;
+  opacity: 0.8;
+}
+
