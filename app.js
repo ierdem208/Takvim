@@ -137,6 +137,11 @@ function getDisplayedMonths() {
       if (event.key === 'Enter') {
         event.preventDefault();
         $(this).attr('contenteditable', 'false').blur();
+
+        //hangi proje -> title ne...
+        //saveDB(proje_id, title);
+
+
         saveTasks();
       }
     });
@@ -236,3 +241,21 @@ $(document).ready(function () {
 
   positionTodayLine();
 });
+
+
+function saveDB(proje_id, title){
+  //$.ajax({
+  //  type: "POST",
+  //  url: "https://....",
+  //  data: {proje_id: proje_id, title:title},
+  //  datatype: "json",
+  //  success: function(data){
+  //    if(data == 'done'){
+  //
+  //    }
+  //  }, failure: function(err){
+  //    alert('error: ' + error);
+  //  }
+  //});
+}
+
