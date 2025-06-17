@@ -49,3 +49,43 @@ th, td {
   opacity: 0.8;
 }
 
+#colorPicker {
+  display: flex;          /* Butonları yan yana diz */
+  gap: 10px;              /* Butonlar arası boşluk */
+  margin: 10px 0;         /* Üst-alt boşluk */
+  justify-content: start; /* Soldan hizala, istersen center ya da space-around yapabilirsin */
+  align-items: center; 
+  justify-content: flex-end;
+}
+
+.color-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;     /* Yuvarlak butonlar */
+  border: 2px solid #ccc; /* İnce kenarlık */
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.tool-btn{
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;     /* Yuvarlak butonlar */
+  border: 2px solid #ccc; /* İnce kenarlık */
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+  display: flex;
+  justify-content: center; /* Yatayda ortala */
+  align-items: center;  
+  text-align: center; 
+
+}
+
+.color-btn:hover {
+  transform: scale(1.2);  /* Hoverda biraz büyüt */
+  border-color: black;    /* Kenarlığı koyulaştır */
+}
+
+.color-btn:focus, .color-btn.active {
+  outline: 3px solid black; /* Seçili buton için kenarlık */
+}

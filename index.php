@@ -1,3 +1,48 @@
+<?php
+
+echo "merhaba";
+$label = "➕ Add Task";
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "Takvim"; // buraya kendi veritabanı adını yaz
+
+// Bağlantı oluştur
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Bağlantı kontrolü
+if ($conn->connect_error) {
+    die("Bağlantı başarısız: " . $conn->connect_error);
+}
+echo "Bağlantı başarılı!";
+
+$sql = "SELECT * FROM project";
+$result = $conn->query($sql);
+
+// Sonuçları diziye aktar
+$titles = [];
+
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $titles[] = $row['title'];
+    }
+} else {
+    echo "Kayıt bulunamadı.";
+}
+
+// foreach ile yazdır
+foreach ($titles as $title) {
+    echo $title . "<br>";
+}
+
+$conn->close();
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +68,7 @@
   <button class="tool-btn" data-tool="erase">➖</button>
 </div>
 
-    <button id="addTaskBtn" class="btn">➕ Add Task</button>
+    <button id="addTaskBtn" class="btn"> <?php echo $label;?></button>
   <table class="gantt-table">
     <!-- First Row: Months -->
     <tr>
@@ -56,7 +101,7 @@
 
   </table>
 
-  <div id="todayLine"></div>
+  
 </div>
 
 

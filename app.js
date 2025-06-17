@@ -8,14 +8,14 @@ let currentTool = null; // "fill", "erase", or null
 const monthNames = ["Ocak", "Subat", "Mart", "Nisan", "Mayis", "Haziran",
   "Temmuz", "Agustos", "Eylul", "Ekim", "Kasim", "Aralik"];
 
-const chartStartDate = new Date(2025, 3, 1); // April is month 3 (0-indexed)
+
 
   function getColorByStatus(status) {
     switch (status) {
       case 1: return '#FF6B6B'; // kırmızı
       case 2: return '#4ECDC4'; // mavi
       case 3: return '#FFD93D'; // sarı
-      case 4: return '#D3D3D3'; // gri
+      case 4: return '#B19CD9'; // gri
       default: return '';
     }
   }
@@ -25,7 +25,7 @@ const chartStartDate = new Date(2025, 3, 1); // April is month 3 (0-indexed)
       case 'rgb(255, 107, 107)': return 1;
       case 'rgb(78, 205, 196)': return 2;
       case 'rgb(255, 217, 61)': return 3;
-      case 'rgb(211, 211, 211)': return 4;
+      case 'rgb(177, 156, 217)': return 4;
       default: return null;
     }
   }
@@ -46,23 +46,24 @@ function getDisplayedMonths() {
 }
 
 
+const today = new Date();
+const currentWeek = getWeekNumber(today);
 
-  function getCurrentWeekIndex(startDate) {
-    const now = new Date();
-    const diffInMs = now - startDate;
-    const diffInWeeks = Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7));
-    return diffInWeeks;
-  }
 
-  function positionTodayLine() {
-    const currentWeekIndex = getCurrentWeekIndex(chartStartDate);
-    const $targetCell = $('.gantt-cell').eq(currentWeekIndex);
+const twoMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 2, 1);
+const startWeek = getWeekNumber(twoMonthsAgo);
 
-    if ($targetCell.length > 0) {
-      const offsetLeft = $targetCell.position().left;
-      $('#todayLine').css('left', offsetLeft + 'px');
-    }
-  }
+function getWeekNumber(date){
+const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+const pastDays = Math.floor((date-firstDayOfYear) / (24 * 60 * 60 * 1000));
+return Math.ceil((pastDays + firstDayOfYear.getDay() + 1)/7)
+
+}
+
+
+ 
+
+
 
   const months = getDisplayedMonths();
 
@@ -86,8 +87,10 @@ function getDisplayedMonths() {
       $(this).find('.gantt-cell').each(function (index) {
         const color = $(this).css('background-color');
         const status = getStatusByColor(color);
+        const week = startWeek + index;
+
         if (status !== null) {
-          dates.push({ week: index, status });
+          dates.push({ week, status });
         }
       });
 
@@ -140,8 +143,6 @@ function getDisplayedMonths() {
 
         //hangi proje -> title ne...
         //saveDB(proje_id, title);
-
-
         saveTasks();
       }
     });
@@ -149,11 +150,16 @@ function getDisplayedMonths() {
     $row.append($taskCell);
 
     for (let i = 0; i < 24; i++) {
+      
+      const realWeek = startWeek + i;
+      
       const $cell = $('<td>')
         .addClass('gantt-cell')
-        .attr('id', `week-${i}`);
+        .attr('id', 'week-' + realWeek)
+        .attr('data-week', realWeek);
+        
 
-      const match = safeTask.dates.find((d) => d.week === i);
+      const match = safeTask.dates.find((d) => d.week === realWeek);
       if (match) {
         $cell.css('background-color', getColorByStatus(match.status));
       }
@@ -174,6 +180,21 @@ function getDisplayedMonths() {
   }
 
 
+function highlightCurrentWeek() {
+  const currentWeek = getWeekNumber(new Date()); // şimdiki hafta numarası
+
+  // Önce önceki vurguyu kaldır
+  $('.gantt-cell.current-week').removeClass('current-week');
+
+  // Güncel haftanın hücresini seç
+  const $currentCell = $(`.gantt-cell[data-week="${currentWeek}"]`).css('border', '3px solid black');
+
+  if ($currentCell.length) {
+    $currentCell.addClass('current-week');
+  }
+}
+
+
 
 
 $(document).ready(function () {
@@ -186,6 +207,9 @@ $(document).ready(function () {
 
  
   $(document).on('click', '.delete-btn', function () {
+  const confirmed = confirm("Bu görevi silmek istediğinize emin misiniz?");
+  if (!confirmed) return;
+
     $(this).closest('tr').remove();
     setTimeout(function(){
       saveTasks();  
@@ -198,6 +222,7 @@ $(document).ready(function () {
   $('#addTaskBtn').on('click', function () {
     console.log('Add Task button clicked');
     addTaskRow();
+    highlightCurrentWeek(); 
     //saveTasks();
   });
 
@@ -222,16 +247,34 @@ $(document).ready(function () {
 
   // When clicking a gantt cell
   $(document).on('click', '.gantt-cell', function () {
+
+const idStr = $(this).attr('id');  // id'yi al
+
+  if (idStr) {
+    const week_id = idStr.substring(5); // 'week-' kısmını at, sadece sayı kalsın
+    console.log('Week id:', week_id);
+  } else {
+    console.log('Bu hücrenin idsi yok');
+  }
+
+
+
+
     if (currentColor) {
       $(this).css('background-color', currentColor);
     } else if (currentTool === 'fill') {
-      $(this).css('background-color', 'grey');
+      $(this).css('background-color', '#B19CD9');
     } else if (currentTool === 'erase') {
       $(this).css('background-color', '');
     }
 
+
+
     var project_id = $(this).parent().attr("data");
-    var week_id = $(this).attr("id").substring(5);
+    var week_id = $(this).attr("data-week");
+
+    saveTasks();
+
 
     //console.log(week_id);
     //console.log(project_id);
@@ -239,7 +282,9 @@ $(document).ready(function () {
 
   });
 
-  positionTodayLine();
+
+  highlightCurrentWeek();
+
 });
 
 
